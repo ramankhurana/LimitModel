@@ -46,10 +46,10 @@ couplings=["0p4"]
 masses=[400,200, 300, 350, 400, 500, 600, 700] 
 years=["2018"]#"2016", "2016apv", "2017", "2018"]
 #inputdir="/eos/cms/store/group/phys_top/ExtraYukawa/BDT/BDT_output/{}/ttc_a_rtc{}_MA{}" ## YEAR, coupling, mass needs to be provided
-inputdir="/afs/cern.ch/work/k/khurana/NTU/ttc/CMSSW_10_6_29/src/ttcbar/LimitModel/BDT_output/{}/ttc_a_rtc{}_MA{}" ## YEAR, coupling, mass needs to be provided
+inputdir="BDT_output/{}/ttc_a_rtc{}_MA{}" ## YEAR, coupling, mass needs to be provided
 
 #outputdir="/eos/cms/store/group/phys_top/ExtraYukawa/FinalInputs"
-outputdir="/afs/cern.ch/work/k/khurana/NTU/ttc/CMSSW_10_6_29/src/ttcbar/LimitModel/FinalInputs"
+outputdir="FinalInputs"
 
 filename="TMVApp_{}_{}.root"
 

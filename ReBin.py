@@ -62,6 +62,8 @@ signal_="TAToTTQ_rtcCOUPLIING_MAMASS"
 for imass in masses: 
     for ir in regions:
         for iyear in years:
+            os.system("mkdir -p FinalInputs/"+str(iyear))
+            
             for ic in couplings:
                 
                 filename_ = filename.format(str(imass), ir)

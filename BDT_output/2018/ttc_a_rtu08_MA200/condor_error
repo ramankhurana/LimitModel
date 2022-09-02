@@ -1,0 +1,8 @@
+[eos-cp] copied 1/1 files and 14.44 MB in 0.14 seconds with 104.60 MB/s
+[eos-cp] copied 1/1 files and 188.76 MB in 0.48 seconds with 391.67 MB/s
+WARNING: In non-interactive mode release checks e.g. deprecated releases, production architectures are disabled.
+WARNING: AutoLibraryloader::enable() and AutoLibraryLoader.h are deprecated.
+Use FWLiteEnabler::enable() and FWLiteEnabler.h instead
+Error in <TSystem::ExpandFileName>: input: $HOME/.rootlogon.C, output: $HOME/.rootlogon.C
+Error in <TSystem::ExpandFileName>: input: /pool/condor/dir_212892/./$HOME/.rootlogon.C, output: /pool/condor/dir_212892/./$HOME/.rootlogon.C
+Error in <TSystem::ExpandFileName>: input: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/macros/$HOME/.rootlogon.C, output: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/macros/$HOME/.rootlogon.C

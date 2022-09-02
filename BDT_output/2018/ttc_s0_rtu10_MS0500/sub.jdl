@@ -1,0 +1,14 @@
+Universe = vanilla
+Notification = Error
+Output = condor_output
+Log = condor_log
+Error = condor_error
+
+transfer_input_files = TMVAClassificationApplication.C, wrapper.sh
+transfer_output_files = output.tar.gz
+Executable = ./wrapper.sh
+Initialdir = .
+notification = Error
+when_to_transfer_output = ON_EXIT
++JobFlavour = "nextweek"
+queue 1

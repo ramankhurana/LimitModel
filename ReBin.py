@@ -44,7 +44,9 @@ print ("allvariations: ", allvariations)
 regions=["ee","mm","em"]
 couplings=["0p4"]
 masses=[400,200, 300, 350, 400, 500, 600, 700] 
-years=["2018"]#"2016", "2016apv", "2017", "2018"]
+years=["2016postapv"] #, "2016apv", "2017", "2018"]
+
+
 #inputdir="/eos/cms/store/group/phys_top/ExtraYukawa/BDT/BDT_output/{}/ttc_a_rtc{}_MA{}" ## YEAR, coupling, mass needs to be provided
 inputdir="BDT_output/{}/ttc_a_rtc{}_MA{}" ## YEAR, coupling, mass needs to be provided
 
@@ -78,7 +80,7 @@ for imass in masses:
                 f_in.cd()
                 #f_in.ls()
 
-                prefix="ttc2018_"
+                prefix="ttc"+iyear+"_"
                 
                 rebin_=5
                 ## create the output file in EOS 
@@ -103,16 +105,19 @@ for imass in masses:
                         print (prefix+"TTTo1L"+inuis,"hisstogram written")
                             
                     
+
                     f_in.cd()
-                    print (prefix+"ttWtoLNu"+inuis)
-                    if type(f_in.Get(prefix+"ttWtoLNu"+inuis)) is TH1F:
-                        h_ttWtoLNu    = copy.deepcopy ( f_in.Get(prefix+"ttWtoLNu"+inuis) )
-                        h_ttWtoLNu.Rebin(rebin_);  h_ttWtoLNu.SetNameTitle("ttc"+iyear+"_ttWtoLNu"+inuis,"ttc"+iyear+"_ttWtoLNu"+inuis)
+                    tempfix=""
+                    if iyear=="2018":        tempfix="toLNu"
+                    if type(f_in.Get(prefix+"ttW"+tempfix+inuis)) is TH1F:
+                        h_ttWtoLNu    = copy.deepcopy ( f_in.Get(prefix+"ttW"+tempfix+inuis) )
+                        h_ttWtoLNu.Rebin(rebin_);  h_ttWtoLNu.SetNameTitle("ttc"+iyear+"_ttW"+tempfix+inuis,"ttc"+iyear+"_ttW"+tempfix+inuis)
                         fout.cd()
                         h_ttWtoLNu.Write()
-                        print (prefix+"ttWtoLNu"+inuis, "hisstogram written")
-                    
+                        print (prefix+"ttW"+tempfix+inuis, "hisstogram written")
+                
                     f_in.cd()
+                    print (prefix+"ttWW"+inuis)
                     if type(f_in.Get(prefix+"ttWW"+inuis)) is TH1F:
                         h_ttVV        = copy.deepcopy (f_in.Get(prefix+"ttWW"+inuis) )
                         h_ttVV.Add (f_in.Get(prefix+"ttWZ"+inuis) )
@@ -123,8 +128,14 @@ for imass in masses:
                     f_in.cd()
                     if type(f_in.Get(prefix+"ttZ"+inuis)) is TH1F:
                         h_ttV      = copy.deepcopy(f_in.Get(prefix+"ttZ"+inuis))
-                        h_ttV.Add( f_in.Get(prefix+"ttZtoQQ"+inuis) )
-                        h_ttV.Add( f_in.Get(prefix+"ttWtoQQ"+inuis) )
+                        
+                        if (iyear=="2018"):
+                            h_ttV.Add( f_in.Get(prefix+"ttZtoQQ"+inuis) )
+                            h_ttV.Add( f_in.Get(prefix+"ttWtoQQ"+inuis) )
+                        if (iyear=="2016postapv"):
+                            h_ttV.Add( f_in.Get(prefix+"ttZToQQ"+inuis) )
+                            h_ttV.Add( f_in.Get(prefix+"ttWToQQ"+inuis) )
+
                         h_ttV.Rebin(rebin_);  h_ttV.SetNameTitle("ttc"+iyear+"_ttV"+inuis,"ttc"+iyear+"_ttV"+inuis)
                         fout.cd()
                         h_ttV.Write()

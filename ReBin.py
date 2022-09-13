@@ -42,15 +42,16 @@ allvariations.append("")
 
 print ("allvariations: ", allvariations)
 regions=["ee","mm","em"]
-couplings=["0p4"]
-masses=[400,200, 300, 350, 400, 500, 600, 700] 
-years=["2016postapv"] #, "2016apv", "2017", "2018"]
-
-
+couplings=["0p1","0p4","0p8","1p0"]
+masses=[200, 300, 350, 400, 500, 600, 700] 
+years=["2016postapv"]#"2016", "2016apv", "2017", "2018"]
 #inputdir="/eos/cms/store/group/phys_top/ExtraYukawa/BDT/BDT_output/{}/ttc_a_rtc{}_MA{}" ## YEAR, coupling, mass needs to be provided
-inputdir="BDT_output/{}/ttc_a_rtc{}_MA{}" ## YEAR, coupling, mass needs to be provided
+#inputdir="/afs/cern.ch/work/k/khurana/NTU/ttc/CMSSW_10_6_29/src/ttcbar/LimitModel/BDT_output/{}/ttc_a_rtc{}_MA{}" ## YEAR, coupling, mass needs to be provided
+inputdir = "BDT_output/{}/ttc_a_rtc{}_MA{}"
 
 #outputdir="/eos/cms/store/group/phys_top/ExtraYukawa/FinalInputs"
+
+#outputdir="/afs/cern.ch/user/z/zhenggan/work_space/CMSSW_10_2_13/src/limitmodel/FinalInputs"
 outputdir="FinalInputs"
 
 filename="TMVApp_{}_{}.root"
@@ -64,8 +65,6 @@ signal_="TAToTTQ_rtcCOUPLIING_MAMASS"
 for imass in masses: 
     for ir in regions:
         for iyear in years:
-            os.system("mkdir -p FinalInputs/"+str(iyear))
-            
             for ic in couplings:
                 
                 filename_ = filename.format(str(imass), ir)
@@ -105,19 +104,20 @@ for imass in masses:
                         print (prefix+"TTTo1L"+inuis,"hisstogram written")
                             
                     
-
                     f_in.cd()
-                    tempfix=""
-                    if iyear=="2018":        tempfix="toLNu"
-                    if type(f_in.Get(prefix+"ttW"+tempfix+inuis)) is TH1F:
-                        h_ttWtoLNu    = copy.deepcopy ( f_in.Get(prefix+"ttW"+tempfix+inuis) )
-                        h_ttWtoLNu.Rebin(rebin_);  h_ttWtoLNu.SetNameTitle("ttc"+iyear+"_ttW"+tempfix+inuis,"ttc"+iyear+"_ttW"+tempfix+inuis)
+                    print (prefix+"ttW"+inuis)
+                    temp_fix = ""
+                    if iyear=='2018':temp_fix="toLNu"
+                    elif iyear=='2016postapv':pass
+                    else:raise ValueError('Please fix me.')
+                    if type(f_in.Get(prefix+"ttW"+temp_fix+inuis)) is TH1F:
+                        h_ttWtoLNu    = copy.deepcopy ( f_in.Get(prefix+"ttW"+temp_fix+inuis) )
+                        h_ttWtoLNu.Rebin(rebin_);  h_ttWtoLNu.SetNameTitle("ttc"+iyear+"_ttWtoLNu"+inuis,"ttc"+iyear+"_ttWtoLNu"+inuis)
                         fout.cd()
                         h_ttWtoLNu.Write()
-                        print (prefix+"ttW"+tempfix+inuis, "hisstogram written")
-                
+                        print (prefix+"ttWtoLNu"+inuis, "hisstogram written")
+                    
                     f_in.cd()
-                    print (prefix+"ttWW"+inuis)
                     if type(f_in.Get(prefix+"ttWW"+inuis)) is TH1F:
                         h_ttVV        = copy.deepcopy (f_in.Get(prefix+"ttWW"+inuis) )
                         h_ttVV.Add (f_in.Get(prefix+"ttWZ"+inuis) )
@@ -128,31 +128,52 @@ for imass in masses:
                     f_in.cd()
                     if type(f_in.Get(prefix+"ttZ"+inuis)) is TH1F:
                         h_ttV      = copy.deepcopy(f_in.Get(prefix+"ttZ"+inuis))
-                        
-                        if (iyear=="2018"):
+                        if iyear=='2018': 
                             h_ttV.Add( f_in.Get(prefix+"ttZtoQQ"+inuis) )
                             h_ttV.Add( f_in.Get(prefix+"ttWtoQQ"+inuis) )
-                        if (iyear=="2016postapv"):
+                        elif iyear=='2016postapv': 
                             h_ttV.Add( f_in.Get(prefix+"ttZToQQ"+inuis) )
                             h_ttV.Add( f_in.Get(prefix+"ttWToQQ"+inuis) )
-
+                        else:raise ValueError('Please fix me.')
                         h_ttV.Rebin(rebin_);  h_ttV.SetNameTitle("ttc"+iyear+"_ttV"+inuis,"ttc"+iyear+"_ttV"+inuis)
                         fout.cd()
                         h_ttV.Write()
                     
                     f_in.cd()
-                    if (type(f_in.Get(prefix+"tttW"+inuis))) is TH1F:
-                        h_tttX     = copy.deepcopy ( f_in.Get(prefix+"tttW"+inuis) )
-                        h_tttX.Add (  f_in.Get(prefix+"tttt"+inuis) )
-                        h_tttX.Rebin(rebin_);  h_tttX.SetNameTitle("ttc"+iyear+"_tttX"+inuis,"ttc"+iyear+"_tttX"+inuis)
-                        fout.cd()
-                        h_tttX.Write()   
+                    if iyear=='2018':
+                        if (type(f_in.Get(prefix+"tttW"+inuis))) is TH1F:
+                            h_tttX     = copy.deepcopy ( f_in.Get(prefix+"tttW"+inuis) )
+                            h_tttX.Add (  f_in.Get(prefix+"tttt"+inuis) )
+                            h_tttX.Rebin(rebin_);  h_tttX.SetNameTitle("ttc"+iyear+"_tttX"+inuis,"ttc"+iyear+"_tttX"+inuis)
+                            fout.cd()
+                            h_tttX.Write()   
                     
+                    elif iyear=='2016postapv':
+                        if (type(f_in.Get(prefix+"tttJ"+inuis))) is TH1F:
+                            h_tttX     = copy.deepcopy ( f_in.Get(prefix+"tttJ"+inuis) )
+                            h_tttX.Add (  f_in.Get(prefix+"tttt"+inuis) )
+                            h_tttX.Rebin(rebin_);  h_tttX.SetNameTitle("ttc"+iyear+"_tttX"+inuis,"ttc"+iyear+"_tttX"+inuis)
+                            fout.cd()
+                            h_tttX.Write()   
+                    else:raise ValueError('Please fix me.')
+
+
                     f_in.cd()
-                    if (type(f_in.Get(prefix+"WWW"+inuis))) is TH1F:
-                        h_VVV      = copy.deepcopy ( f_in.Get(prefix+"WWW"+inuis) )
-                        h_VVV.Add( f_in.Get(prefix+"WWZ"+inuis))
-                        h_VVV.Add( f_in.Get(prefix+"WZZ"+inuis))
+                    if iyear=='2018':process_name_y = 'WWW'
+                    elif iyear=='2016postapv':process_name_y = 'www1'
+                    else:raise ValueError('Please fix me.')
+
+                    if (type(f_in.Get(prefix+process_name_y+inuis))) is TH1F:
+                        h_VVV      = copy.deepcopy ( f_in.Get(prefix+process_name_y+inuis) )
+                        
+                        if iyear=='2018':
+                            h_VVV.Add( f_in.Get(prefix+"WWZ"+inuis))
+                            h_VVV.Add( f_in.Get(prefix+"WZZ"+inuis))
+                        elif iyear=='2016postapv':
+                            h_VVV.Add( f_in.Get(prefix+"wwz1"+inuis))
+                            h_VVV.Add( f_in.Get(prefix+"wzz1"+inuis))
+
+                        else:raise ValueError('Please specifiy this as well!')
                         h_VVV.Rebin(rebin_);  h_VVV.SetNameTitle("ttc"+iyear+"_VVV"+inuis,"ttc"+iyear+"_VVV"+inuis)
                         fout.cd()   
                         h_VVV.Write()
@@ -176,15 +197,28 @@ for imass in masses:
                         h_tt_V_H.Write()
                     
                     f_in.cd()
-                    if (type(f_in.Get(prefix+"DY"+inuis))) is TH1F:
-                        h_DY       = copy.deepcopy (f_in.Get(prefix+"DY"+inuis))
+                    if iyear=='2018':tmp_fix=''
+                    elif iyear=='2016postapv':tmp_fix = 'nlo'
+                    else:raise ValueError('Please fix me.')
+                    
+                    if (type(f_in.Get(prefix+"DY"+tmp_fix+inuis))) is TH1F:
+                        h_DY       = copy.deepcopy (f_in.Get(prefix+"DY"+tmp_fix+inuis))
                         h_DY.Rebin(rebin_);  h_DY.SetNameTitle("ttc"+iyear+"_DY"+inuis,"ttc"+iyear+"_DY"+inuis)
                         fout.cd()
                         h_DY.Write()
                     
                     f_in.cd()
-                    if (type(f_in.Get(prefix+"tzq"+inuis))) is TH1F:
-                        h_tzq      = copy.deepcopy ( f_in.Get(prefix+"tzq"+inuis)) 
+                    if iyear=='2018':
+                        H=f_in.Get(prefix+"tzq"+inuis)
+                    elif iyear=='2016postapv':
+                        H=f_in.Get(prefix+"tZq"+inuis)
+                    else:raise ValueError('Please fix me.')
+                    if (type(H)) is TH1F:
+                        if iyear=='2018':h_tzq      = copy.deepcopy (H)
+                        elif iyear=='2016postapv':h_tzq      = copy.deepcopy (H)
+                        else:raise ValueError('Please fix me.')
+
+                        h_tzq      = copy.deepcopy (H) 
                         h_tzq.Rebin(rebin_);  h_tzq.SetNameTitle("ttc"+iyear+"_tzq"+inuis,"ttc"+iyear+"_tzq"+inuis)
                         fout.cd()
                         h_tzq.Write()

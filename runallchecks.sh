@@ -3,6 +3,9 @@ year=$2 #2017, 2016, 2018, 20161718
 catg=$3 #C, em, mm, ee 
 datacard=$4 #datacards_ttc_2017/ttc_datacard_2017_SR_C_C_MA200_rtc04.txt
 
+
+## source runallchecks.sh LimitChecks_19Sept2022 2017 C datacards_ttc_2017/ttc_datacard_2017_SR_C_C_MA200_rtc04.txt
+ 
 mode=asimov_t_0
 
 ## create workspace 

@@ -161,42 +161,46 @@ python runlimits.py -c ee --rtc rtc10
 python runlimits.py -c C --rtc rtc10
 
 
-## For impacts and pulls 
+## For impacts and pulls for full Run2 dataset. 
 source runallchecks.sh SignalExtractionChecks2017 20161718 C datacards_ttc_run2/ttc_datacard_run2_SR_C_C_MA200_rtc04.txt 
 
+
+## For impacts and pulls for 2017 only, 
+  - first one is the directory name where you want to keep the plots, note that you need to make this directory yourself by hand.  
+  - second one is year, 
+  - third is the dataccard name. 
+  - Its nice to give the datacard for combine ee, mm, em for each year. 
+  - Similarly you can perform the checks for other years as well, change the three arguments for the script and it will keep the new set of plots in the directory you created by hand, I usually create one dir for each year, and  always keep the plots in same dir, overwrite them, in case you need multiple versions of these plots only then you should change the name of these files. 
+
 source runallchecks.sh SignalExtractionChecks2017 2017 C datacards_ttc_2017/ttc_datacard_2017_SR_C_C_MA200_rtc04.txt
+
+
+## make sure that we have the following line in the datacards, these are already added in each datacard automaticlaly, but a sanity check by eye is always good. This is for the bin by bin statistical uncertainties. 
 * autoMCStats 10 0 1
 
 
-## For signal shape comparison 
+## For signal shape comparison, there are many shapes which you can compare for checking the signal shapes,
 python OverlappingPlots.py; cp -r plots_SignalShapeComparison/ /afs/cern.ch/work/k/khurana/public/AnalysisStuff/ttc
 
 
-## for rescaling signal
+## for rescaling signal, this is already implemented in the datacards, YOU MUST REMOVE THIS WHEN MENG HAS FIXED THE NORMALISATION OF THE SIGNAL HISTOGRAMS IN THE INPUT ROOTFILES. Note that you also need to comment two lines in the runlimits.py which I shared on the skype, which is for scaling cross-section and scaling by 0.01. (0.01 --> 1)
+
 sigscale rateParam * TAToTTQ_rtc01_MA350 0.01 [0.009999,0.01111]
 
 
-## Stack plots 
+## Stack plots; if you want to see the stack plots, after performing the fit then you need to use the file from fitting i.e. by running the macro runallchecks.sh. This makes plots and a rootfile which cna be used to make cmoparison of postfit and prefit plots. 
+
 python stackhist.py fitDiagnostics_C_20161718_asimov_t_0_SignalExtractionChecks2017.root ee asimov 20161718
 python stackhist.py fitDiagnostics_C_20161718_asimov_t_0_SignalExtractionChecks2017.root em asimov 20161718
 python stackhist.py fitDiagnostics_C_20161718_asimov_t_0_SignalExtractionChecks2017.root mm asimov 20161718
 
+
+## In case Meng can not change the name of a histogram and you need to perform some nuinsce study, mainly correlation and uncorrelation of the nuisances then following syntax will be very useful without chnaging the input files. 
 nuisance edit rename * * jes2016 jes2017
 nuisance edit rename * * jes2018 jes2017
 nuisance edit rename * * jes2016apv jes2017
 
 
 page 124 of the AN for theory cross-section uncertainty 
-
-
-
-## limit model for 1 year is done now. 
-## nuisnace shapes used for the fitting 
-## Signal shape comparison 
-## post fit plots 
-## combination for full Run 2 
-## fit diagnostics test, mainly pulls, impacts and goodness of fit for the model. 
-## add the interference samples to see the results. 
-## perform 2d scans.  
 
 

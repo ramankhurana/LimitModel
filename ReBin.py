@@ -17,7 +17,15 @@ from ROOT import TH1F, TFile
 import copy
 import os
 import sys 
+import sys, optparse,argparse
 
+usage = "python ReBin.py --intf"
+parser = argparse.ArgumentParser(description=usage)
+parser.add_argument("-intf", "--intf", dest="intf", action='store_true')
+
+args = parser.parse_args()
+
+print ("interference boolean is:", args.intf)
 
 #processes=["TTTo1L","ttWW", "ttWZ", "ttWtoLNu", "ttZ", "ttZtoQQ", "tttW", "tttt", "tzq", "WWW", "DY", "WWZ", "WWdps", "WZ", "WZZ", "ZZZ", "osWW", "tW", "tbarW", "ttH", "ttWH", "ttWtoQQ", 
 #           "ttZH", "tttJ", "zz2l", "TAToTTQ_rtcCOUPLIING_MAMASS"]
@@ -41,38 +49,46 @@ allvariations= [inuis+iv for iv in variations for inuis in nuisnaces]
 allvariations.append("")
 
 print ("allvariations: ", allvariations)
+
 regions=["ee","mm","em"]
-couplings=["0p1","0p4","0p8","1p0"]
+couplings=["0p4"]#["0p1","0p4","0p8","1p0"]
+
 masses=[200, 300, 350, 400, 500, 600, 700] 
+if args.intf: masses= [250]#,300,350,400,550,700]
+
 years=["2016postapv"]#"2016", "2016apv", "2017", "2018"]
-#inputdir="/eos/cms/store/group/phys_top/ExtraYukawa/BDT/BDT_output/{}/ttc_a_rtc{}_MA{}" ## YEAR, coupling, mass needs to be provided
-#inputdir="/afs/cern.ch/work/k/khurana/NTU/ttc/CMSSW_10_6_29/src/ttcbar/LimitModel/BDT_output/{}/ttc_a_rtc{}_MA{}" ## YEAR, coupling, mass needs to be provided
+
 inputdir = "BDT_output/{}/ttc_a_rtc{}_MA{}"
-
-#outputdir="/eos/cms/store/group/phys_top/ExtraYukawa/FinalInputs"
-
-#outputdir="/afs/cern.ch/user/z/zhenggan/work_space/CMSSW_10_2_13/src/limitmodel/FinalInputs"
-outputdir="FinalInputs"
-
 filename="TMVApp_{}_{}.root"
 
-##filename_ = filename.format("400","ee")
-##print (filename_)
-
+if args.intf: 
+    inputdir = "BDT_output/{}/ttc_{}_rtc{}"
+  
+outputdir="FinalInputs"
 
 signal_="TAToTTQ_rtcCOUPLIING_MAMASS"
+if args.intf:
+    signal_="TAToTTQ_MASS_rtcCOUPLING"
 
 for imass in masses: 
     for ir in regions:
         for iyear in years:
             for ic in couplings:
                 
-                filename_ = filename.format(str(imass), ir)
+                rfile_massstr=str(imass) +"_"+ str(imass-50)
+                if not args.intf: filename_ = filename.format(str(imass), ir)
+                if args.intf: 
+                    filename_ = filename.format(rfile_massstr, ir)
+                
                 ic_ = ic.replace("p","")
-                inputdir_ = inputdir.format(iyear, ic_, str(imass)) 
+                dir_massstr="a_"+str(imass) +"_s_"+ str(imass-50)
+                
+                if not args.intf: inputdir_ = inputdir.format(iyear, ic_, str(imass)) 
+                if args.intf: inputdir_ = inputdir.format(iyear, dir_massstr, ic_)
+                
                 print (" fiilename: ", inputdir_+"/"+filename_)
-                # print (inputdir+iyear+"/rtc"+ic.replace("p","")+"/"+filename_)
                 print (inputdir_+"/"+filename_)
+                
                 rootfiilename=inputdir_+"/"+filename_
                 f_in = TFile(rootfiilename,"R")
                 
@@ -240,9 +256,13 @@ for imass in masses:
                         h_data_obs.Write()
                         
                     
-                    sig_name_ = prefix+(signal_.replace("MASS",str(imass))).replace("COUPLIING",ic_)
+                    if not args.intf: sig_name_ = prefix+(signal_.replace("MASS",str(imass))).replace("COUPLIING",ic_)
+                    if args.intf: 
+                        sig_massstr = str(imass) +"_s_"+ str(imass-50)
+                        sig_name_ = prefix+(signal_.replace("MASS",sig_massstr)).replace("COUPLING",ic_)
+                        print ("sig_name_: ",sig_name_)
                     f_in.cd()
-                    if (type(f_in.Get(sig_name_+inuis))) is TH1F:
+                    if (type(f_in.Get(sig_name_+inuis))) is TH1F :
                         h_signal_ = copy.deepcopy( f_in.Get(sig_name_+inuis)); h_signal_.Rebin(rebin_); h_signal_.SetNameTitle(sig_name_+inuis, sig_name_+inuis)
                         fout.cd()
                         h_signal_.Write()

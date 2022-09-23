@@ -25,11 +25,11 @@ root -l -b -q PlotPulls.C\(\"pulls_${catg}_${year}_${mode}_${dirname}.root\",\"$
 
 #### impacts
 #--freezeParameters ratett --setParameters ratett=1.2
-text2workspace.py $datacard --channel-masks
-combineTool.py -M Impacts -d $datacardws --doInitialFit --robustFit 1 -m 125 -t -1 --expectSignal 0 --rMin -10 
-combineTool.py -M Impacts -d $datacardws --doFits  --robustFit 1 -m 125 --parallel 32 -t -1 --expectSignal 0 --rMin -10 
-combineTool.py -M Impacts -d  $datacardws -m 125 -o impacts_t0.json
-plotImpacts.py -i  impacts_t0.json -o   ${dirname}/impacts_t0_${dirname}_${catg}
+#text2workspace.py $datacard --channel-masks
+#combineTool.py -M Impacts -d $datacardws --doInitialFit --robustFit 1 -m 125 -t -1 --expectSignal 0 --rMin -10 
+#combineTool.py -M Impacts -d $datacardws --doFits  --robustFit 1 -m 125 --parallel 32 -t -1 --expectSignal 0 --rMin -10 
+#combineTool.py -M Impacts -d  $datacardws -m 125 -o impacts_t0.json
+#plotImpacts.py -i  impacts_t0.json -o   ${dirname}/impacts_t0_${dirname}_${catg}
 
 ## run pulls and impact asimov signal injected 
 ### pulls 

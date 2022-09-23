@@ -22,13 +22,12 @@ from ROOT import TPaveText
 from ROOT import TLatex
 
 import os
-colors=[4,3,2,5,1,9,41,46,30,12,28,20,32]
+colors=[4,1,2,3,5,9,41,46,30,12,28,20,32]
 markerStyle=[23,21,22,20,24,25,26,27,28,29,20,21,22,23]            
 linestyle=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 
 
-def DrawOverlap(fileVec, histVec, titleVec,legendtext,pngname,logstatus=[0,0],xRange=[-99999,99999,1],legendheader="",ylim=[0.1,1000] ): 
-    ## ylim: only for graphs 
+def DrawOverlap(fileVec, histVec, titleVec,legendtext,pngname,logstatus=[0,0],xRange=[-99999,99999,1],legendheader=""):
 
     gStyle.SetOptTitle(0)
     gStyle.SetOptStat(0)
@@ -43,7 +42,6 @@ def DrawOverlap(fileVec, histVec, titleVec,legendtext,pngname,logstatus=[0,0],xR
     histList=[]
     histList1=[]
     maximum=[]
-    minimum=[]
     
     ## Legend    
     
@@ -78,30 +76,34 @@ def DrawOverlap(fileVec, histVec, titleVec,legendtext,pngname,logstatus=[0,0],xR
         for ihisto_ in range(len(histVec)):
             print ("printing histo "+str(histVec[ihisto_]))
             histo = inputfile[ifile_].Get(histVec[ihisto_])
+            print ("integral: ", histo.Integral())
             #status_ = type(histo) is TGraphAsymmErrors
             histList.append(histo)
             # for ratio plot as they should nt be normalize 
             histList1.append(histo)
             #print histList[ii].Integral()
             #histList[ii].Rebin(xRange[2])
-            #histList[ii].Scale(1.0/histList[ii].Integral())
+            if ("TAToTTQ_rtc04" in str(histVec[ihisto_])):
+                histList[ii].Scale(100.0/histList[ii].Integral())
+            
             maximum.append(histList[ii].GetMaximum())
             maximum.sort()
-
-            minimum.append(histList[ii].GetMinimum())
-            minimum.sort()
-            
             ii=ii+1
 
     print histList
+    print ("max:", maximum)
+    print ()
     for ih in range(len(histList)):
         tt = type(histList[ih])
         if logstatus[1] is 1 :
-            histList[ih].SetMaximum(maximum[0]*1000)
-            histList[ih].SetMinimum(minimum[0])
+            #histList[ih].SetMaximum(100) #1.4 for log
+            #histList[ih].SetMinimum(0.1) #1.4 for log
+            histList[ih].SetMaximum(maximum[0]*10)
+            
+            histList[ih].SetMinimum(0.005)
         if logstatus[1] is 0 :
-            histList[ih].SetMaximum(maximum[0]*1.4) #1.4 for log
-            histList[ih].SetMinimum(0.5) #1.4 for log
+            histList[ih].SetMaximum(maximum[-1]*1.4) #1.4 for log
+            histList[ih].SetMinimum(0.005) #1.4 for log
 #        print "graph_status =" ,(tt is TGraphAsymmErrors)
 #        print "hist status =", (tt is TH1D) or (tt is TH1F)
          #histList[ih].Smooth()
@@ -118,12 +120,7 @@ def DrawOverlap(fileVec, histVec, titleVec,legendtext,pngname,logstatus=[0,0],xR
                 histList[ih].Draw("HIST   same")   ## removed hist 
 
         if tt is TGraphAsymmErrors :
-            #histList[ih].SetMaximum(maximum[-1]*1000)
-            #histList[ih].SetMinimum(minimum[0]*0.1)
-
-            histList[ih].SetMaximum(ylim[1]) 
-            histList[ih].SetMinimum(ylim[0]) 
-            
+            histList[ih].SetMaximum(100) 
             histList[ih].SetMarkerColor(colors[ih])
             histList[ih].SetLineColor(colors[ih])
             histList[ih].SetLineWidth(2)
@@ -137,7 +134,7 @@ def DrawOverlap(fileVec, histVec, titleVec,legendtext,pngname,logstatus=[0,0],xR
             leg.AddEntry(histList[ih],legendtext[ih],"L")
         histList[ih].GetYaxis().SetTitle(titleVec[1])
         histList[ih].GetYaxis().SetTitleSize(0.052)
-        histList[ih].GetYaxis().SetTitleOffset(0.898)
+        histList[ih].GetYaxis().SetTitleOffset(0.98)
         histList[ih].GetYaxis().SetTitleFont(42)
         histList[ih].GetYaxis().SetLabelFont(42)
         histList[ih].GetYaxis().SetLabelSize(.052)
@@ -173,14 +170,84 @@ def DrawOverlap(fileVec, histVec, titleVec,legendtext,pngname,logstatus=[0,0],xR
     
 
     leg.Draw()
-    outputdirname = 'plots_limit_comp/'
+    outputdirname = 'plots_NuisnacesShapeComparison/ee/'
     histname=outputdirname+pngname 
     c.SaveAs(histname+'.png')
     c.SaveAs(histname+'.pdf')
-    outputname = 'cp  -r '+ outputdirname+'/*' +' /afs/cern.ch/work/k/khurana/public/AnalysisStuff/ttc/plots_limit_comp/'
-    os.system(outputname) 
+    outputname = 'cp  -r '+ outputdirname+'/*' +' /afs/cern.ch/work/k/khurana/public/AnalysisStuff/monoH/LimitModelPlots/plots_limit/limitcomp/'
+#    os.system(outputname) 
     
 
 
 print "calling the plotter"
 
+'''
+
+dirname='../LimitModel/inputs/'
+
+files=[dirname+'rtc01/TMVApp_All_em.root']
+
+legend=['200','300','350','400','500','600','700']
+histoname1=['ttc2017_TAToTTQ_rtc01_MA200', 'ttc2017_TAToTTQ_rtc01_MA300','ttc2017_TAToTTQ_rtc01_MA350','ttc2017_TAToTTQ_rtc01_MA400','ttc2017_TAToTTQ_rtc01_MA500', 'ttc2017_TAToTTQ_rtc01_MA600','ttc2017_TAToTTQ_rtc01_MA700' ]
+
+xtitle='BDT discriminant'
+ytitle='# of events (normalised to 1)'
+axistitle = [xtitle, ytitle]
+DrawOverlap(files,histoname1,axistitle,legend,'ttc2017_TAToTTQ_rtc01_MAScan',[0,1],[-1,1],legendheader="#rho_{tc}=0.1")
+
+
+
+files=[dirname+'rtc04/TMVApp_All_em.root']
+legend=['200','300','350','400','500','600','700']
+histoname1=['ttc2017_TAToTTQ_rtc01_MA200', 'ttc2017_TAToTTQ_rtc01_MA300','ttc2017_TAToTTQ_rtc01_MA350','ttc2017_TAToTTQ_rtc01_MA400','ttc2017_TAToTTQ_rtc01_MA500', 'ttc2017_TAToTTQ_rtc01_MA600','ttc2017_TAToTTQ_rtc01_MA700' ]
+histoname1  =  [iname.replace("rtc01","rtc04") for iname in histoname1]
+xtitle='BDT discriminant'
+ytitle='# of events (normalised to 1)'
+axistitle = [xtitle, ytitle]
+DrawOverlap(files,histoname1,axistitle,legend,'ttc2017_TAToTTQ_rtc04_MAScan',[0,1],[-1,1], legendheader="#rho_{tc}=0.4")
+
+
+
+
+
+files=[dirname+'rtc08/TMVApp_All_em.root']
+legend=['200','300','350','400','500','600','700']
+histoname1=['ttc2017_TAToTTQ_rtc01_MA200', 'ttc2017_TAToTTQ_rtc01_MA300','ttc2017_TAToTTQ_rtc01_MA350','ttc2017_TAToTTQ_rtc01_MA400','ttc2017_TAToTTQ_rtc01_MA500', 'ttc2017_TAToTTQ_rtc01_MA600','ttc2017_TAToTTQ_rtc01_MA700' ]
+histoname1  =  [iname.replace("rtc01","rtc08") for iname in histoname1]
+xtitle='BDT discriminant'
+ytitle='# of events (normalised to 1)'
+axistitle = [xtitle, ytitle]
+DrawOverlap(files,histoname1,axistitle,legend,'ttc2017_TAToTTQ_rtc08_MAScan',[0,1],[-1,1], legendheader="#rho_{tc}=0.8")
+
+
+
+files=[dirname+'rtc10/TMVApp_All_em.root']
+legend=['200','300','350','400','500','600','700']
+histoname1=['ttc2017_TAToTTQ_rtc01_MA200', 'ttc2017_TAToTTQ_rtc01_MA300','ttc2017_TAToTTQ_rtc01_MA350','ttc2017_TAToTTQ_rtc01_MA400','ttc2017_TAToTTQ_rtc01_MA500', 'ttc2017_TAToTTQ_rtc01_MA600','ttc2017_TAToTTQ_rtc01_MA700' ]
+histoname1  =  [iname.replace("rtc01","rtc10") for iname in histoname1]
+xtitle='BDT discriminant'
+ytitle='# of events (normalised to 1)'
+axistitle = [xtitle, ytitle]
+DrawOverlap(files,histoname1,axistitle,legend,'ttc2017_TAToTTQ_rtc10_MAScan',[0,1],[-1,1], legendheader="#rho_{tc}=1.0")
+
+
+
+files=[dirname+'rtcScan_TMVApp_All_em.root']
+legend=["0.1", "0.4", "0.8", "1.0"]
+histoname1=['ttc2017_TAToTTQ_rtc01_MA200', 'ttc2017_TAToTTQ_rtc04_MA200','ttc2017_TAToTTQ_rtc08_MA200','ttc2017_TAToTTQ_rtc10_MA200']
+xtitle='BDT discriminant'
+ytitle='# of events (normalised to 1)'
+axistitle = [xtitle, ytitle]
+DrawOverlap(files,histoname1,axistitle,legend,'ttc2017_TAToTTQ_rtcScan_MA200',[0,1],[-1,1], legendheader="m_{A}=200 GeV")
+
+
+files=[dirname+'rtcScan_TMVApp_All_em.root']
+legend=["0.1", "0.4", "0.8", "1.0"]
+histoname1=['ttc2017_TAToTTQ_rtc01_MA500', 'ttc2017_TAToTTQ_rtc04_MA500','ttc2017_TAToTTQ_rtc08_MA500','ttc2017_TAToTTQ_rtc10_MA500']
+xtitle='BDT discriminant'
+ytitle='# of events (normalised to 1)'
+axistitle = [xtitle, ytitle]
+DrawOverlap(files,histoname1,axistitle,legend,'ttc2017_TAToTTQ_rtcScan_MA500',[0,1],[-1,1], legendheader="m_{A}=500 GeV")
+
+
+'''
